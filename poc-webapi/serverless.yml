@@ -1,0 +1,77 @@
+service: poc-webapi
+
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: dev
+  region: eu-west-1
+  versionFunctions: true
+  timeout: 30
+
+  environment:
+    SUBSCRIPTION_TABLE: POC-SUBSCRIPTION-TBL
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource: "*"
+ 
+
+
+# you can add packaging information here
+#package:
+#  include:
+#    - include-me.js
+#    - include-me-dir/**
+#  exclude:
+#    - exclude-me.js
+#    - exclude-me-dir/**
+
+functions:
+  createSubscription:
+    handler: src/api/subscriptions/create.perform
+    memorySize: 128
+    description: Register a new subscription
+    events:
+      - http:
+          path: subscriptions
+          method: post
+
+  listSubscriptions:
+    handler: src/api/subscriptions/list.perform
+    memorySize: 128
+    description: List all subscriptions
+    events:
+      - http:
+          path: subscriptions
+          method: get
+
+  subscriptionDetails:
+    handler: src/api/subscriptions/details.perform
+    memorySize: 128
+    description: Show subscription details
+    events:
+      - http:
+          path: subscriptions/{id}
+          method: get          
+  
+
+resources:
+  Resources:
+    PocSubscriptionTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: POC-SUBSCRIPTION-TBL
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5

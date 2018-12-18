@@ -1,0 +1,15 @@
+curl -X POST \
+--data '{ "request": { "url": "/subscriptions/aaa", "method": "GET" }, "response": { "status": 200, "jsonBody": {"service":"BLOB Service","createdAt":1545147161570,"id":"aaa","name":"My second subscription"} }}' \
+http://localhost:8080/__admin/mappings/new
+
+curl -X POST \
+--data '{ "request": { "url": "/subscriptions/bbb", "method": "GET" }, "response": { "status": 404, "jsonBody": { "message": "Resource not found!"} }}' \
+http://localhost:8080/__admin/mappings/new
+
+More:
+http://wiremock.org/docs/stubbing/
+http://wiremock.org/docs/request-matching/
+https://youtu.be/x3MvZ8DFrpE
+
+Command to record the mappings:
+java -jar build/libs/wiremock-standalone-2.19.0.jar --proxy-all <server> --record-mappings
